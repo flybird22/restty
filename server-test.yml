@@ -1,0 +1,10 @@
+scanRoutePackage: 
+port: 7777
+name: aaa
+engineClassName: com.pl.restty.server.template.FreeMarkerEngine
+cachedStaticFiles: false
+webRoot: 
+sessionProxy: local
+scanProviderPackage: 
+scanFilterPackage: com.test
+

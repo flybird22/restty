@@ -1,0 +1,213 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>pl.server</groupId>
+  <artifactId>restty</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>restty</name>
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <docker.repostory>localhost:5000</docker.repostory>
+    <docker.registry.name>registry</docker.registry.name>
+  </properties>
+
+  <repositories>
+  	<repository>
+		<id>mvnsearch</id>
+		<name>mvnsearch Maven Repository</name>
+		<url>http://www.mvnsearch.org/maven2</url>
+	</repository>
+  	
+  </repositories>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+    
+    <!-- https://mvnrepository.com/artifact/io.netty/netty-all -->
+	<dependency>
+	    <groupId>io.netty</groupId>
+	    <artifactId>netty-all</artifactId>
+	    <version>4.1.27.Final</version>
+	    <!-- <version>5.0.0.Alpha2</version> -->
+	    
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/io.netty/netty-transport-native-kqueue -->
+	<!-- <dependency>
+	    <groupId>io.netty</groupId>
+	    <artifactId>netty-transport-native-kqueue</artifactId>
+	    <version>4.1.27.Final</version>
+	</dependency> -->
+
+  	<!-- https://mvnrepository.com/artifact/io.netty/netty-transport-native-unix-common -->
+	<!-- <dependency>
+	    <groupId>io.netty</groupId>
+	    <artifactId>netty-transport-native-unix-common</artifactId>
+	    <version>4.1.27.Final</version>
+	</dependency> -->
+	
+	<dependency>
+	    <groupId>org.freemarker</groupId>
+	    <artifactId>freemarker</artifactId>
+	    <version>2.3.23</version>
+	</dependency>
+	
+	<dependency>
+	    <groupId>org.apache.zookeeper</groupId>
+	    <artifactId>zookeeper</artifactId>
+	    <version>3.4.10</version>		    
+	</dependency>
+	
+	<dependency>  
+		<groupId>org.slf4j</groupId>  
+		<artifactId>slf4j-log4j12</artifactId>  
+		<version>1.7.2</version>  		
+	</dependency>
+	
+	<dependency>
+         <groupId>net.sf.json-lib</groupId>
+         <artifactId>json-lib</artifactId>
+         <version>2.4</version>
+         <classifier>jdk15</classifier>
+     </dependency>
+     
+     <dependency>
+	    <groupId>redis.clients</groupId>
+	    <artifactId>jedis</artifactId>
+	    <version>2.7.3</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.jboss.marshalling/serialization-java -->
+	<dependency>
+	    <groupId>org.jboss.marshalling</groupId>
+	    <artifactId>jboss-marshalling-serial</artifactId>
+	    <version>2.0.5.Final</version>
+	    
+	</dependency>
+	<dependency>
+	    <groupId>org.jboss.marshalling</groupId>
+	    <artifactId>jboss-marshalling</artifactId>
+	    <version>2.0.5.Final</version>
+	</dependency> 
+
+	<dependency>
+	    <groupId>com.esotericsoftware.yamlbeans</groupId>
+	    <artifactId>yamlbeans</artifactId>
+	    <version>1.08</version>
+	</dependency>
+	
+	<dependency>
+	    <groupId>dom4j</groupId>
+	    <artifactId>dom4j</artifactId>
+	    <version>1.6.1</version>
+	</dependency>
+
+  </dependencies>
+  <build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.0</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-shade-plugin</artifactId>
+		        <version>3.1.1</version>
+		        <executions>
+		            <execution>
+		                <phase>package</phase>
+		                <goals>
+		                        <goal>shade</goal>
+		                </goals>
+		                    <configuration>
+		                        <transformers>
+		                            <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+		                                <mainClass>com.pl.restty.test.App</mainClass>
+		                            </transformer>
+		                        </transformers>
+		                    </configuration>
+		            </execution>
+		        </executions>
+		     </plugin>
+		     <!-- 生成Jar包 适合小型项目-->
+			<!-- <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>lib/</classpathPrefix>
+							<mainClass>com.pl.restty.test.App</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin> -->
+		     <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.4.13</version>
+                <configuration>
+                	<serverId>local-docker-registry</serverId>
+	                <registryUrl>localhost:5000</registryUrl>
+	                <!-- 是否push到docker registry -->
+	                <!-- <pushImage>true</pushImage> -->
+                    <imageName>localhost:5000/${project.artifactId}:${project.version}</imageName>
+                    <!-- <imageName>localhost:5000/${project.artifactId}:${project.version}</imageName> -->
+                    <!-- 指定 Dockerfile 路径-->
+                    <dockerDirectory>${basedir}/</dockerDirectory>
+                    <imageTags>
+                        <imageTag>${project.version}</imageTag>
+                        <!-- <imageTag>latest</imageTag> -->
+                    </imageTags>
+                    
+                </configuration>
+               <!-- <executions>
+	                <execution>
+	                    <id>build-image</id>
+	                    <phase>package</phase>
+	                    <goals>
+	                        <goal>build</goal>
+	                    </goals>
+	                </execution>
+	                <execution>
+	                    <id>tag-image</id>
+	                    <phase>package</phase>
+	                    <goals>
+	                        <goal>tag</goal>
+	                    </goals>
+	                    <configuration>
+	                        <image>${project.artifactId}:${project.version}</image>
+	                        <newName>localhost:5000/${project.artifactId}:${project.version}</newName>
+	                    </configuration>
+	                </execution>
+	                <execution>
+	                    <id>push-image</id>
+	                    <phase>deploy</phase>
+	                    <goals>
+	                        <goal>push</goal>
+	                    </goals>
+	                    <configuration>
+	                        <imageName>localhost:5000/${project.artifactId}:${project.version}</imageName>	                        
+	                    </configuration>
+	                </execution>
+	            </executions> -->
+            </plugin>
+		</plugins>
+	
+	</build>
+</project>
